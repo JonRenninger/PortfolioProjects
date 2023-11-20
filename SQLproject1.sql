@@ -79,6 +79,9 @@ order by 1,2
 
 
 -- GLOBAL NUMBERS overall
+drop view if exists GlobalDeathPercentage
+GO
+Create View GlobalDeathPercentage as
 select sum(new_cases) as total_cases, sum(cast(new_deaths as int)) as total_deaths,
 case
 	when sum(new_cases) = 0 then NULL
@@ -86,7 +89,9 @@ case
 end as DeathPercentage
 from PortfolioProject..CovidDeaths
 where continent is not null and continent != ''
-order by 1,2
+GO
+select *
+from GlobalDeathPercentage
 
 
 
@@ -161,6 +166,8 @@ from #PercentPopulationVaccinated
 
 
 -- Creating View to store data for later visualizations
+drop view if exists PercentPopulationVaccinated
+GO
 Create View PercentPopulationVaccinated as
 select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
 , sum(vac.new_vaccinations) over (partition by dea.location order by dea.date) as RollingPeopleVaccinated
@@ -171,6 +178,7 @@ join PortfolioProject..covidvaccinations vac
 	and dea.date = vac.date
 where dea.continent is not null and dea.continent != ''
 --order by 2,3
+GO
 
 
 select *
