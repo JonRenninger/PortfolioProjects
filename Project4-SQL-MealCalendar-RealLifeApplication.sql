@@ -2,7 +2,9 @@
 
 
 
-
+-------------------------------------------------------------------------------------------------
+-- create the temp table that will be used to insert the final meal schedule
+-------------------------------------------------------------------------------------------------
 drop table if exists #NewMealMonth
 create table #NewMealMonth (
 	[year] [int] NULL,
@@ -12,6 +14,9 @@ create table #NewMealMonth (
 	[mealName] [varchar](200) NULL,
 	[number] int
 	);
+-------------------------------------------------------------------------------------------------
+-- insert the preliminary meal plan into the temp table, leaving non-preferredDays as NULL and numbering them
+-------------------------------------------------------------------------------------------------
 with cte as (
 SELECT [year]
       ,[month]
@@ -41,7 +46,9 @@ from cte2
 
 
 
-
+-------------------------------------------------------------------------------------------------
+-- begin a while loop to randomly generate meals for every NULL mealName above
+-------------------------------------------------------------------------------------------------
 declare @i int
 set @i = 1
 while @i < (select max(number)+1 from #NewMealMonth)
@@ -79,7 +86,9 @@ insert into #RandomMeal
 select mealName
 from cte3
 
-
+-------------------------------------------------------------------------------------------------
+-- use the randomly generated mealName above and update a NULL value with it, and finish iterating through the while loop
+-------------------------------------------------------------------------------------------------
 update #NewMealMonth
 set mealName = (select mealName from #RandomMeal)
 where mealName is NULL
@@ -92,7 +101,9 @@ end
 go
 
 
-
+-------------------------------------------------------------------------------------------------
+-- The final query to provide for a dashboard and data visualization
+-------------------------------------------------------------------------------------------------
 select [year]
       ,[month]
       ,[day]
